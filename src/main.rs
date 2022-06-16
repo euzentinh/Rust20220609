@@ -1,95 +1,110 @@
-use std::{io, process::id};
-// use rand::Rng;
-use regex::Regex;
 
-fn main() {
+// fn main(){
 
-    // Bài tập 1: Cho 2 mảng, kiểm tra mảng này có phải là mảng con của mảng kia không ? 
-    // (yêu cầu đúng thứ tự của các phần tử)
-    check_sub_array();
+// }
 
-    // Bài tập 2 : Cho 1 chuỗi str Slice như dưới đây. 
-    // Nhập 1 từ bất kỳ từ bàn phím, in ra số lượng từ này xuất hiện trong chuỗi đã cho. 
-    count_word();
-}
-
-fn check_sub_array() {
-let org_arr = [1, 2, 3, 5, 6, 8, 10, 11];
-    let sub_arr = [6,8,10];
-
-    let mut is_child = false;
-    let mut i = 0;
-    loop {
-        if i == org_arr.len() {
-            break;
-        }
-        let mut j = 0;
-        loop {
-            if org_arr[i + j] != sub_arr[j]{
-                break;
-            }
-            else if j == sub_arr.len() - 1 {
-                is_child = true;
-                break;
-            }
-            else {
-                j +=1;
-            }
-        }
-
-        if is_child {
-            break;
-        }
-        i += 1;
-        
-    }
-
-    println!("sub_arr is org_arr's child: {}", is_child);
-}
-
-fn count_word() {
-    let paragraph = "This is a regular paragraph with the default style of Normal. 
-    This is a regular paragraph with the default style of Normal. 
-    This is a regular paragraph with the default style of Normal. 
-    This is a regular paragraph with the default style of Normal. 
-    This is a regular paragraph with the default style of Normal.";
-
-    let mut word = String::new();
-    println!("enter word you want to count: ");
-    io::stdin().read_line(&mut word).unwrap();
-
-    word.pop();
-    println!("counting word: {}", word);
-
-    let mut childgraph = paragraph;
-    let mut count = 0;
-    loop {
-        let result = childgraph.find(&word);
-        if result.is_none() {
-            break;
-        }
-        count += 1;
-        let idx = result.unwrap();
-        childgraph = &childgraph[idx + word.len()..];
-    }
-    println!("number of word \"{}\" in paragraph : {:?}", word, count);
-}
-
-fn find_word_regex() {
-    let paragraph = "This is a regular paragraph with the default style of Normal. 
-    This is a regular paragraph with the default style of Normal. 
-    This is a regular paragraph with the default style of Normal. 
-    This is a regular paragraph with the default style of Normal. 
-    This is a regular paragraph with the default style of Normal.";
-
-    let mut word = String::new();
-    println!("enter regex you want: ");
-    io::stdin().read_line(&mut word).unwrap();
-
-    word.pop();
-    println!("regex: {}", word);
-
-    let re = Regex::new(r"(\d{4})-(\d{2})-(\d{2})").unwrap();
+//Exercise 1
+// Mục đích: giải quyết vấn đề ownership and borrowing không dùng clone()
+// fn main() {
     
-    // println!("number of word \"{}\" in paragraph : {:?}", word, count);
+//     let x = change_value(10,&mut 20);
+//     println!("{}", x);
+// }
+
+
+
+// fn change_value(input:u32, output: &mut u32) -> u32{
+//     if input ==1 {
+//         *output =3;
+//     }
+//     else {
+//         *output = 4;
+//     }
+
+//     *output
+// }
+
+
+//Exercise 2
+// Mục đích: giải quyết vấn đề ownership và borrowing ko dùng clone()
+// Các bạn có thể sửa thêm logic để đúng với mục đichs bài này là liệt kê các số nguyên tố 
+// fn main() {
+//     let mut count: u32 = 1;
+//     let mut num: u64 = 1;
+//     let mut primes: Vec<u64> = Vec::new();
+//     primes.push(2);
+
+//     while count < 10 {
+//         num += 2;
+//         if vector_is_prime(num, &primes) {
+//             count += 1;
+//             primes.push(num);
+//         }
+//     }
+//     println!("{:?}", primes);
+// }
+
+// fn vector_is_prime(num: u64, p: &Vec<u64>) -> bool {
+//     for &i in p {
+//         if num > i && num % i != 0 {
+//             false;
+//         }
+//     }
+
+//     true
+// }
+
+
+
+//Exercise 3
+// Mục đích: giải quyết vấn đề ownership and borrowing ko dùng clone()
+// fn main() {
+//     let mut values = vec![10, 11, 12];
+//     let v = &mut values;
+
+//     let mut max = 0;
+    
+//     //for n in &mut values {
+//     for n in v.into_iter() {
+//         max = std::cmp::max(max, *n);
+//     }
+
+//     println!("max is {}", max);
+//     println!("Converting to percentages of maximum value...");
+//     // let v2 = &mut values;
+//     //for n in &mut values {
+//     // for n in v2() {
+//     for n in v.into_iter() {
+//         *n = 100 * (*n) / max;
+//     }
+//     println!("values: {:#?}", values);
+// }
+
+
+//Exercise 4
+// Mục đích : giải quyết vấn đề ownership và borrowing ko dùng clone()
+// Logic hiện tại đang sai (cho 1 vec -> đảo chiều vector đó)
+fn main(){
+    let mut  a = vec![1,2,3,4,5];
+    let i = 0;
+    let c = 0;
+    let (a, c) = test(&mut a);
+    println!("a0 = {}", a[0]);
+    println!("a1 = {}", a[1]);
+    println!("a2 = {}", a[2]);
+    println!("a3 = {}", a[3]);
+    println!("a4 = {}", a[4]);
+}
+
+pub fn test(a: &mut Vec<u8>) -> (Vec<u8>, i32) {
+    let mut b:Vec<u8>  = Vec::new();
+    let mut c:u8 = 0;
+    loop {
+        if (*a).len() == 0 { break; }
+        let d = a.pop().unwrap();
+        c = d;
+        println!("c = {}", c);
+        b.push(d);
+    }
+    (b, c as i32)
 }
