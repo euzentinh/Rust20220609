@@ -1,163 +1,104 @@
-use std::collections::HashMap;
 
-fn main() {
-    println!("Hello, world!");
+// Bài tập cho trait
+// Đề bài : Implement trait Iterator (của thư viện Rust) cho kiểu dữ liệu Struct sau
 
-/*-----------------------------*/
-//Test case 1: Khởi tạo đầu tiên danh sách phải rỗng
-    println!("Test case 1");
-    let mut my_school = School::new();
-    println!("students number: {}", my_school.students.len());
-/*-----------------------------*/
+//https://doc.rust-lang.org/std/iter/trait.Iterator.html
 
-// Test case 2:
-//Thêm sinh viên có tên "Lee" với điểm số là 2
-// thì tất cả các điểm số hiện có của trường là 2
-//nếu thêm sinh viên khác "Nancy" với điểm số là 3
-//thì các điểm số hiện tại là [2,3]
-    println!("Test case 2.1");
-
-    my_school.add(2, "Lee");
-    let mut grades = my_school.grades();
-    for grade in grades {
-        println!("grade of student: {}", grade);        
-    }
-    println!("Test case 2.2");
-    my_school.add(3, "Nancy");
-    grades = my_school.grades();
-    for grade in grades {
-        println!("grade of student: {}", grade);        
-    }
-/*-----------------------------*/
-
-// Test case 3:
-// Giả sử danh sách hiện tại : [(Bob, 4), (Alice,4), (Tom,5)]
-// với điểm số 4 thì ta có sinh viên nào: -> [Alice, Bob] not [Bob ,Alice]
-// vì cần tên theo alphabet
-    println!("Test case 3");
-
-    my_school.add(4, "Bob");
-    my_school.add(4, "Alice");
-    my_school.add(5, "Tom");
-    
-    let names = my_school.grade(4);
-    for name in names {
-        println!("student with grade 4: {}", name);        
-    }
-/*-----------------------------*/
-// Nếu mọi người làm xong rùi thì có thể làm advance hơn bằng cách 
-// sử dụng Generic type cho điểm số không nhất thiết phải U32 nữa mà có thể "A+", "B+" chẳng hạn (string)
-/*-----------------------------*/
-
-}
+// struct Fibonacci {
+//     a: u32,
+//     b: u32,
+// }
+// Như mọi người đã biết Dãy Fibonacci có quy luật như sau
+// Dãy Fibonacci là dãy số bắt đầu bằng 0 với 1. Mọi số tiếp theo
+// đều là tổng của 2 số trước đó
+// Ví dụ: 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, ...
 
 
-
-pub struct School {
-    students: HashMap<String, u32>
-}
-
-impl School {
-    pub fn new() -> School {
-        School { students: HashMap::new() }
-    }
-
-    pub fn add(&mut self, grade: u32, student: &str) {
-        self.students.insert(student.to_string(), grade);
-    }
-
-    pub fn grades(&self) -> Vec<u32> {
-        let mut grades:Vec<u32> = Vec::new();
-        for grade in self.students.values() {
-            grades.push(*grade);
-        }
-        grades.sort();
-        return grades;
-    }
-
-
-    pub fn grade(&self, grade: u32) -> Vec<String> {
-        let mut list = Vec::new();
-        for  (k, v) in self.students.iter() {
-            if *v == grade {
-                list.push(k.to_string());
-            }
-        }
-        list.sort();
-        return list;
-    }
-}
-
-// Bài tập
-// Cho ngữ cảnh như sau : Một ngôi trường cần lập danh
-//sách thông tin sinh viên bao gồm tên sinh viên và điểm của sinh viên đó.
-// với mục đích thống kê kiểm tra giáo dục của ngôi trường này
-
-
-/*-----------------------------*/
-// Gợi ý:
-// Định nghĩa bằng struct, mọi người nên sử dụng HashMap 
-// Tại sao lại sử dụng HashMap và ko phải Vec
-//https://doc.rust-lang.org/std/collections/struct.HashMap.html
-// struct School {
-//     students: HashMap<String, u32>
+// Trong trường hợp bài toán này 
+// Khởi tạo ban đầu sẽ là 
+// struct Fibonacci {
+//     a = 1,
+//     b = 0,
 // }
 
-// trong trường hợp này thì String : tên của sinh viên đó
-// u32 là điểm số 
+// Một số kiến thức để làm dc bài này: Trait, Generic Type, Associated type,
+// Gợi ý có sườn như sau:
 
-// Một số yêu cầu như sau:
+#[derive(Debug)]
+struct Fibonacci {
+    a: u32,
+    b: u32,
+}
 
-/*-----------------------------*/
-//0. Tạo 1 function new() khởi tạo rỗng ban đầu cho danh sách
+impl Iterator for Fibonacci {
+    type Item = u32;
 
-/*-----------------------------*/
-//1. Có thể thêm thông tin của sinh viên gồm có tên và điểm
-// Ví dụ: thêm tên "Alice" có 7 điểm, thêm tên "Bob" có 2 điểm, ...
-// Gợi ý : định nghĩa hàm "add" implement cho Struct
+// Trả về số fibonaci tiếp theo dựa trên kiểu dữ liệu struct Fibonacci
+    fn next(&mut self) -> Option<u32> {
+        let rs = self.b;
+        self.b = self.a;
+        self.a = self.b + rs;
+        Some(rs)
+    }
+}
 
-/*-----------------------------*/
-//2. Liệt kê các điểm số hiện tại mà trường đã cập nhập
-// ví dụ :danh sách hiện tại gồm có [(Alice, 10), (Bob,4)]
-//trả về là [4,10] (điểm số nên tăng dần và ko có duplicate)
-// ví dụ: [(Alice, 10), (Bob,4), (Steve,4)] -> [4,10]
+// Khởi tạo ban đầu cho Fibonaci: 0, 1
+fn fibonacci_numbers() -> Fibonacci {
+    Fibonacci { a: 1, b: 0 }
+}
 
-/*-----------------------------*/
-//3. Liệt kê danh sách các học sinh có cùng 1 điểm số
-// ví dụ: hiện tại danh sách gồm có (Alice, 3), (Bob, 10), (Charlie,3)
-// liệt kê danh sách học sinh có cùng 3 điểm : [Alice, Charlie]
-
-// Yêu cầu trả về: danh sách sinh viên là alphabet theo tên 
-
-// Gợi ý: 
-// ví dụ : Ban đầu [(Alice, 10), (Bob,2), (Eve,4), (Long,2)] -> [(Bob, 2), (Long,2), (Eve,4), (Alice,10)]
-//định nghĩa hàm "find_student" có tham số là điểm số -> trả về danh sách các sinh viên có cùng điểm số mong muốn
-
-
-// Các bạn phải vuợt qua một số test case như sau :
-
-/*-----------------------------*/
-//Test case 1: Khởi tạo đầu tiên danh sách phải rỗng
-
-/*-----------------------------*/
-
-// Test case 2:
-//Thêm sinh viên có tên "Lee" với điểm số là 2
-// thì tất cả các điểm số hiện có của trường là 2
-//nếu thêm sinh viên khác "Nancy" với điểm số là 3
-//thì các điểm số hiện tại là [2,3]
-
-/*-----------------------------*/
-
-// Test case 3:
-// Giả sử danh sách hiện tại : [(Bob, 4), (Alice,4), (Tom,5)]
-// với điểm số 4 thì ta có sinh viên nào: -> [Alice, Bob] not [Bob ,Alice]
-// vì cần tên theo alphabet
+// fn main() {
+// //     Vì struct Fibonacci có implement trait Iterator của Rust nên 
+// // có thể dùng câu lệnh for dc
+// // Câu lệnh for bản chất sẽ chuyển qua trait Iterator nên instance của
+// // struct Fibonacci có thể duyệt được, 
+// // Mỗi lần duyệt sẽ tự động chạy function signature next() trên
+// // Nên cần implement hàm next() cho struct Fiboncci.
+//     for number in fibonacci_numbers() {
+//         println!("{}", number);
+//     }
+// }
 
 
-/*-----------------------------*/
-// Nếu mọi người làm xong rùi thì có thể làm advance hơn bằng cách 
-// sử dụng Generic type cho điểm số không nhất thiết phải U32 nữa mà có thể "A+", "B+" chẳng hạn (string)
-/*-----------------------------*/
+// Kết quả :
+// Nó sẽ iter mãi và hiện kết quả như sau:
+// 1
+// 1
+// 2
+// 3
+// 5
+// 8
+// 13
+// 21
+// 34
+// 55
+// 89
+// 144
+// 233
+// 377
+// ...
 
-// Sườn thông tin cho mọi người dễ làm
+
+
+// Bài 2: Lifetime
+// Yêu cầu: Sửa lỗi Lifetime 
+
+use std::fmt;
+struct StrDisplayable<'a>(Vec<&'a str>);
+
+impl<'a> fmt::Display for StrDisplayable<'a> {
+
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        for v in & self.0 {
+            write!(f, "\n{}", v)?;
+        }
+        Ok(())
+    }
+
+}
+
+fn main() {
+        let vec: Vec<&str> = vec!["a","bc","def"];
+        let vec_Foo = StrDisplayable(vec);
+        println!("{}",vec_Foo);
+}
